@@ -1,0 +1,8 @@
+default:
+     extensions:
+         Behat\MinkExtension:
+             base_url: 'http://meinfernbus.de/'
+             sessions:
+                 default:
+                   selenium2:
+                     wd_host: http://localhost:4444/wd/hub
