@@ -75,6 +75,7 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
         /* then press the search button */
         $element = $this->getSession()->getPage()->find("css","input.search-form__btn-search");
         $element->click();
+        sleep(1);
     }
 
     /**
@@ -89,13 +90,18 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
         /* iterate over results to pick the 2nd */
         $counter = 0;
         foreach ($elements as $elem) {
+            /* we need 2nd search result */
             if ($counter > 0) {
                 $btn = $elem->find("css", "input.reserve");
                 $btn->submit();
                 break;
             }
-            $counter++;
+            /* incrementing if search result is valid ie order button exists */
+            if ( !empty( $elem->find("css", "input.reserve") )) {
+                $counter++;
+            }
         }
+        sleep(3); //wait for results to arrive
     }
 
     /**
@@ -103,14 +109,13 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function iCanCheckTheProductIsInTheBag()
     {
+        /* check the ride is booked for one Adult and one Kid */
         $element = $this->getSession()->getPage()->find("css","span.price-detail");
         $text = $element->getText();
-
-        /* check the ride is booked for one Adult and one Kid */
         expect($text)->toBe("1 Erwachsener, 1 Kind");
 
         /* check that ordering button is active i.e. do not have btn-disabled class */
-        assert($this->getSession()->getPage()->find("css","a#book-button")->hasClass("btn-disabled"));
+        $this->assertSession()->elementAttributeNotContains("css","a#book-button", "class", "btn-disabled");
     }
 
 }
